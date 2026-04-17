@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "io.github.darkkronicle.advancedchatlog.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "ScreenInvoker"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

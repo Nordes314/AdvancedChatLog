@@ -1,0 +1,87 @@
+plugins {
+	id 'fabric-loom' version "${loom_version}"
+	id 'maven-publish'
+	id 'io.freefair.lombok' version '8.10'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+base {
+	archivesName = project.archives_base_name
+}
+
+version = "${project.minecraft_version}-${project.mod_version}"
+group = project.maven_group
+
+Properties additionalProperties = new Properties()
+if (file("extra.properties").exists()) {
+	additionalProperties.load(file("extra.properties").newReader())
+}
+
+repositories {
+	mavenCentral()
+	mavenLocal() // only used to build the mod locally
+	maven { url 'https://masa.dy.fi/maven' }
+	maven { url 'https://jitpack.io' }
+	maven {
+		url = uri("https://maven.pkg.github.com/Arematics/AdvancedChatCore")
+		content {
+			includeGroup "com.arematics"
+		}
+		credentials {
+			username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+			password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+		}
+	}
+	maven { url 'https://maven.fallenbreath.me/releases' }
+}
+
+dependencies {
+	implementation 'org.projectlombok:lombok:1.18.28'
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	modImplementation files("../malilib-fabric-1.21.11-0.27.8.jar")
+	modImplementation files("../AdvancedChatCore-1.21.11-1.5.17-alpha.1.jar")
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 21
+}
+
+java {
+	withSourcesJar()
+}
+
+jar {
+	from "LICENSE.txt"
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
+		}
+	}
+
+	repositories {
+	}
+}
