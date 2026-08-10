@@ -12,7 +12,7 @@ import io.github.darkkronicle.advancedchatcore.ModuleHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -74,7 +74,7 @@ public class AdvancedChatLog implements ClientModInitializer {
         loggerContext.updateLoggers();
     }
 
-    public static void logChatMessage(Text text) {
+    public static void logChatMessage(Component text) {
         if (ChatLogData.isLoading()) {
             return;
         }

@@ -18,14 +18,14 @@ import io.github.darkkronicle.advancedchatcore.util.Color;
 import io.github.darkkronicle.advancedchatlog.AdvancedChatLog;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ChatLogScreenSection extends AdvancedChatScreenSection {
 
-    private final static Identifier LOG_ICON = Identifier.of(AdvancedChatLog.MOD_ID, "textures/gui/log.png");
+    private final static Identifier LOG_ICON = Identifier.fromNamespaceAndPath(AdvancedChatLog.MOD_ID, "textures/gui/log.png");
 
     public ChatLogScreenSection(AdvancedChatScreen screen) {
         super(screen);
@@ -42,7 +42,7 @@ public class ChatLogScreenSection extends AdvancedChatScreenSection {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 
     }
 }
