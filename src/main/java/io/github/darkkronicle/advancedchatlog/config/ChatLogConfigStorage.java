@@ -18,7 +18,7 @@ import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
 import io.github.darkkronicle.advancedchatcore.config.SaveableConfig;
@@ -206,16 +206,16 @@ public class ChatLogConfigStorage implements IConfigHandler {
     @Override
     public void load() {
         LogUtils.getLogger().info("[AdvancedChatLog] Loading...");
-        long time = Util.getMeasuringTimeMs();
+        long time = Util.getMillis();
         loadFromFile();
-        LogUtils.getLogger().info("[AdvancedChatLog] Load completed in {}ms", Util.getMeasuringTimeMs() - time);
+        LogUtils.getLogger().info("[AdvancedChatLog] Load completed in {}ms", Util.getMillis() - time);
     }
 
     @Override
     public void save() {
         LogUtils.getLogger().info("[AdvancedChatLog] Saving...");
-        long time = Util.getMeasuringTimeMs();
+        long time = Util.getMillis();
         saveFromFile();
-        LogUtils.getLogger().info("[AdvancedChatLog] Save completed in {}ms", Util.getMeasuringTimeMs() - time);
+        LogUtils.getLogger().info("[AdvancedChatLog] Save completed in {}ms", Util.getMillis() - time);
     }
 }

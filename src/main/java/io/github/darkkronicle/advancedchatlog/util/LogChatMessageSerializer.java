@@ -21,10 +21,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.StrictJsonParser;
 
 @Environment(EnvType.CLIENT)
@@ -43,11 +43,11 @@ public class LogChatMessageSerializer implements IJsonSave<LogChatMessage> {
         return style;
     }
 
-    private Text transfer(Text text) {
+    private Component transfer(Component text) {
         // Using the built in serializer LiteralText is required
-        Text base = Text.empty();
-        for (Text t : text.getSiblings()) {
-            Text newT = Text.literal(t.getString()).fillStyle(cleanStyle(t.getStyle()));
+        Component base = Component.empty();
+        for (Component t : text.getSiblings()) {
+            Component newT = Component.literal(t.getString()).withStyle(cleanStyle(t.getStyle()));
             base.getSiblings().add(newT);
         }
         return base;
@@ -60,11 +60,11 @@ public class LogChatMessageSerializer implements IJsonSave<LogChatMessage> {
         return style;
     }
 
-    private Text forceTransfer(Text text) {
+    private Component forceTransfer(Component text) {
         // Using the built in serializer LiteralText is required
-        Text base = Text.empty();
-        for (Text t : text.getSiblings()) {
-            Text newT = Text.literal(t.getString()).fillStyle(forceCleanStyle(t.getStyle()));
+        Component base = Component.empty();
+        for (Component t : text.getSiblings()) {
+            Component newT = Component.literal(t.getString()).withStyle(forceCleanStyle(t.getStyle()));
             base.getSiblings().add(newT);
         }
         return base;
@@ -75,11 +75,11 @@ public class LogChatMessageSerializer implements IJsonSave<LogChatMessage> {
         LocalDateTime dateTime = LocalDateTime.from(formatter.parse(obj.get("time").getAsString()));
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
-        Text display = TextCodecs.CODEC.parse(
-                DynamicRegistryManager.EMPTY.getOps(JsonOps.INSTANCE),
+        Component display = ComponentSerialization.CODEC.parse(
+                RegistryAccess.EMPTY.createSerializationContext(JsonOps.INSTANCE),
                 obj.get("display")).resultOrPartial((string2) -> {}).orElse(null);
-        Text original = TextCodecs.CODEC.parse(
-                DynamicRegistryManager.EMPTY.getOps(JsonOps.INSTANCE),
+        Component original = ComponentSerialization.CODEC.parse(
+                RegistryAccess.EMPTY.createSerializationContext(JsonOps.INSTANCE),
                 obj.get("original")).resultOrPartial((string2) -> {}).orElse(null);
         int stacks = obj.get("stacks").getAsByte();
         ChatMessage message =
@@ -99,11 +99,11 @@ public class LogChatMessageSerializer implements IJsonSave<LogChatMessage> {
         try {
             json.addProperty("time", formatter.format(dateTime));
             json.addProperty("stacks", chat.getStacks());
-            json.add("display", TextCodecs.CODEC.encodeStart(
-                    DynamicRegistryManager.EMPTY.getOps(JsonOps.INSTANCE),
+            json.add("display", ComponentSerialization.CODEC.encodeStart(
+                    RegistryAccess.EMPTY.createSerializationContext(JsonOps.INSTANCE),
                     transfer(chat.getDisplayText())).getOrThrow());
-            json.add("original", TextCodecs.CODEC.encodeStart(
-                    DynamicRegistryManager.EMPTY.getOps(JsonOps.INSTANCE),
+            json.add("original", ComponentSerialization.CODEC.encodeStart(
+                    RegistryAccess.EMPTY.createSerializationContext(JsonOps.INSTANCE),
                     transfer(chat.getOriginalText())).getOrThrow());
         } catch (JsonParseException e) {
             try {
@@ -114,11 +114,11 @@ public class LogChatMessageSerializer implements IJsonSave<LogChatMessage> {
                 json = new JsonObject();
                 json.addProperty("time", formatter.format(dateTime));
                 json.addProperty("stacks", chat.getStacks());
-                json.add("display", TextCodecs.CODEC.encodeStart(
-                        DynamicRegistryManager.EMPTY.getOps(JsonOps.INSTANCE),
+                json.add("display", ComponentSerialization.CODEC.encodeStart(
+                        RegistryAccess.EMPTY.createSerializationContext(JsonOps.INSTANCE),
                         forceTransfer(chat.getDisplayText())).getOrThrow());
-                json.add("original", TextCodecs.CODEC.encodeStart(
-                        DynamicRegistryManager.EMPTY.getOps(JsonOps.INSTANCE),
+                json.add("original", ComponentSerialization.CODEC.encodeStart(
+                        RegistryAccess.EMPTY.createSerializationContext(JsonOps.INSTANCE),
                         forceTransfer(chat.getOriginalText())).getOrThrow());
             } catch (Exception e2) {
                 AdvancedChatLog.LOGGER.warn("[AdvancedChatLog] Save Error 2", e2);
